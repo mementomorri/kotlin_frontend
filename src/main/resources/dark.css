@@ -1,0 +1,12 @@
+body {
+    background-color: darkslategray;
+    color: white;
+}
+
+
+.afterClick{
+    color:grey;
+}
+.beforeClick{
+    color:white;
+}
