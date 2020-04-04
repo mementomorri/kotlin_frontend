@@ -72,12 +72,12 @@
 
 После загруски страница выглядит так:
 
-![](https://github.com/mementomorri/KotlinReact/blob/lab5/screenshots/load.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab5/screenshots/load.PNG)
 
 После смены занятия:
 
-![](https://github.com/mementomorri/KotlinReact/blob/lab5/screenshots/change_class.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab5/screenshots/change_class.PNG)
 
 После клика по студентам:
 
-![](https://github.com/mementomorri/KotlinReact/blob/lab5/screenshots/click_on_student.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab5/screenshots/click_on_student.PNG)
