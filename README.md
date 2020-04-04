@@ -26,19 +26,19 @@
     
 Вид приложения после загрузки:
 
-    ![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab5/screenshots/onLoad.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/onLoad.PNG)
 
 После добавления занятия "Homework" приложение выглядит так:
 
-    ![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab5/screenshots/newElement.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/newElement.PNG)
 
 Клик по студентам "Sheldon Cooper" и "Leonard Hofstadter" внутри созданного занятия "Homework":
 
-    ![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab5/screenshots/onClick.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/onClick.PNG)
 
 Добавление ещё одного занатия "Self education":
 
-    ![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab5/screenshots/anotherElement.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/anotherElement.PNG)
 
 Для реализации компонента "AddLesson" внесены изменения в компонент "App":
 
