@@ -15,7 +15,7 @@
         var presents: Array<Array<Boolean>>
     }
 
-Также произведен рефакторинг функции componentWillMount для корректной работы компонента App:
+Также произведен рефакторинг функции componentWillMount внутри компонента App для корректной его работы:
 
     override fun componentWillMount() {
         state.lessons = lessonsList
