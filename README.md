@@ -47,8 +47,8 @@
 
     slist(studentList.toTypedArray()) — вариант на основе класса;
     
-![](https://github.com/mementomorri/KotlinReact/blob/master/screenshots/slist.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/master/screenshots/slist.PNG)
 
     listOfStudents(studentList.toTypedArray()) — вариант на основе функционального компонента.
     
-![](https://github.com/mementomorri/KotlinReact/blob/master/screenshots/listOfStudents.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/master/screenshots/listOfStudents.PNG)
