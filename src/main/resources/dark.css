@@ -3,10 +3,10 @@ body {
     color: white;
 }
 
-
-.afterClick{
-    color:grey;
+.present {
+    font-weight: bold;
 }
-.beforeClick{
-    color:white;
+
+.absent {
+    font-style: italic;
 }

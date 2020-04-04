@@ -2,14 +2,12 @@ package data
 
 data class Student (
     val firstname: String,
-    val surname: String,
-    val id:Number
+    val surname: String
 )
 
 val studentList =
     arrayListOf(
-        Student("Sheldon", "Cooper", 1),
-        Student("Leonard", "Hofstadter", 2),
-        Student("Howard", "Wolowitz", 3),
-        Student("Alexey", "Karsten", 4)
+        Student("Sheldon", "Cooper"),
+        Student("Leonard", "Hofstadter"),
+        Student("Howard", "Wolowitz")
     )
