@@ -1,83 +1,98 @@
 # lab 5
 Задание:\
-    — Реализовать компонент "Занятие", отображающий название занятия и список студентов;\
-    — Поднять состояние компонента RStudentList  в созданный компонент;\
-    — RStudentList преобразовать в функционнальный компонент.
+    — Перенесите массив lessons из AppProps в AppState;\
+    — Добавьте компонент AddLesson, который позволяет добавить урок в массив lessons. 
+    Другие компоненты (кроме App и AddLesson) не должны изменяться, но должны корректно работать.\
 
-Основной код для реализации названия занятия как компонента на основе класса RStudentClasses и последовательного написания соответствующей функции RClasses, добавлен в файл RClasses.kt:
+Перенос массива lessons из свойств AppProps в состояния AppState:
 
-    class RStudentClasses : RComponent<RClasses, RStudentListState>(){
-        override fun componentWillMount() {
-            state.apply {
-                present = Array(props.students.size){false}
-            }
-        }
-        override fun RBuilder.render() {
-            select {
-                props.nameOfClass.map {
-                    option { +it.name }
-                }
-            }
-            ol {
-                fStudentList(props.students,state.present, onIndex())
-            }
-        }
-        fun RBuilder.onIndex(): (Int) -> (Event) -> Unit = {
-            onClick(it)
-        }
-        fun RBuilder.onClick(index: Int) :(Event) -> Unit = {
-            setState {
-                present[index] = !present[index]
-            }
+    interface AppProps : RProps {
+        var students: Array<Student>
+    }
+
+    interface AppState : RState {
+        var lessons: Array<Lesson>
+        var presents: Array<Array<Boolean>>
+    }
+
+Также произведен рефакторинг функции componentWillMount для корректной работы компонента App:
+
+    override fun componentWillMount() {
+        state.lessons = lessonsList
+        state.presents = Array(state.lessons.size) {
+            Array(props.students.size) { false }
         }
     }
-    fun RBuilder.RClasses(students: Array<Student>, nameOfClass: Array<nameOfClass>) =
-        child(RStudentClasses::class){
-            attrs.students = students
-            attrs.nameOfClass = nameOfClass
-        }
-
-Решение использует интерфейсы RClasses и RStudentListState:
     
-    interface RClasses : RProps {
-        var nameOfClass: Array<nameOfClass>
-        var listStudent :Array<Student>
-    }
+Вид приложения после загрузки:
 
-    interface RStudentListState :RState{
-        var present: Array<Boolean>
-    }
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab5/screenshots/onLoad.PNG)
 
-Изменения в файле main.kt затрагивают лишь вызов функции:
+После добавления занятия "Homework" приложение выглядит так:
 
-    render(document.getElementById("root")!!) {
-            h1 {
-                +"Students"
-            }
-            RClasses( studentList.toTypedArray(), ListOfClasses)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab5/screenshots/newElement.PNG)
+
+Клик по студентам "Sheldon Cooper" и "Leonard Hofstadter" внутри созданного занятия "Homework":
+
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab5/screenshots/onClick.PNG)
+
+Добавление ещё одного занатия "Self education":
+
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab5/screenshots/anotherElement.PNG)
+
+Для реализации компонента "AddLesson" внесены изменения в компонент "App":
+
+   override fun RBuilder.render() {
+        h1 { +"App" }
+        addLesson(handleEvent())
+        lessonListFull(
+        ...
+        
+Функция "addLesson", добавляющая новое занятие, вызывает другую функцию "handleEvent", 
+которая просто обновляет массив lessons добавляя набранный в строку предмет:
+
+    fun handleEvent():(String) -> Unit = { lesson->
+        setState {
+            lessons += Lesson(lesson)
+            presents += arrayOf(Array(props.students.size){false})
         }
+    }
+    
+Компонент "AddLesson" содержит следуйщий код:
 
-Состояние компонента RStudentList поднято в RClasses и преобразовано в функциональный:
+    package component
 
-    fun RBuilder.RFStudentList(students: Array<Student>,state : Array<Boolean>, onClick: (Int) -> (Event)->Unit) =
-        child(functionalComponent<RStudentListProps> {props ->
-            props.students.mapIndexed {index, student ->
-                li {
-                    rstudent(student, state[index],onClick(index))
+    import kotlinx.html.*
+    import kotlinx.html.js.onClickFunction
+    import org.w3c.dom.HTMLInputElement
+    import react.*
+    import react.dom.*
+    import kotlin.browser.document
+
+    interface lessonProps :RProps{
+        var onClick : (String)  -> Unit
+    }
+
+    val fAddLesson =
+        functionalComponent<lessonProps>{
+            input(InputType.text) {
+                attrs.id="lessonName"
+                attrs.placeholder= "Enter lesson name"
+            }
+            button {
+                +"+"
+                val alias=it.onClick
+                attrs.onClickFunction = {
+                    val lesson = document.getElementById("lessonName") as HTMLInputElement
+                    alias(lesson.value)
                 }
             }
-        }){
-            attrs.students = students
         }
 
-После загруски страница выглядит так:
-
-![](https://github.com/mementomorri/KotlinReact/blob/lab5/screenshots/load.PNG)
-
-После смены занятия:
-
-![](https://github.com/mementomorri/KotlinReact/blob/lab5/screenshots/change_class.PNG)
-
-После клика по студентам:
-
-![](https://github.com/mementomorri/KotlinReact/blob/lab5/screenshots/click_on_student.PNG)
+    fun RBuilder.addLesson(
+        onClick : (String)  -> Unit
+    )=child(fAddLesson){
+        attrs.onClick=onClick
+    }
+    
+Весь исходный код в папке scr/main/kotlin/component
