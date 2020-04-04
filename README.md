@@ -1,10 +1,10 @@
 # lab 6
 Задание:\
-    — Перенесите массив lessons из AppProps в AppState;\
-    — Добавьте компонент AddLesson, который позволяет добавить урок в массив lessons. 
-    Другие компоненты (кроме App и AddLesson) не должны изменяться, но должны корректно работать.
+    — Перенесите массив "lessons" из "AppProps" в "AppState";\
+    — Добавьте компонент "AddLesson", который позволяет добавить урок в массив "lessons". 
+    Другие компоненты (кроме "App" и "AddLesson") не должны изменяться, но должны корректно работать.
 
-Перенос массива lessons из свойств AppProps в состояния AppState:
+Перенос массива "lessons" из свойств "AppProps" в состояния "AppState":
 
     interface AppProps : RProps {
         var students: Array<Student>
@@ -15,7 +15,7 @@
         var presents: Array<Array<Boolean>>
     }
 
-Также произведен рефакторинг функции componentWillMount внутри компонента App для корректной его работы:
+Также произведен рефакторинг функции "componentWillMount" внутри компонента "App" для корректной его работы:
 
     override fun componentWillMount() {
         state.lessons = lessonsList
@@ -49,7 +49,7 @@
         ...)
         
 Функция "addLesson", добавляющая новое занятие, вызывает другую функцию "handleEvent", 
-которая просто обновляет массив lessons добавляя набранный в строку предмет:
+которая просто обновляет массив "lessons" добавляя набранный в строку предмет:
 
     fun handleEvent():(String) -> Unit = { lesson->
         setState {
