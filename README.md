@@ -41,7 +41,7 @@
 
 ![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab7/screenshots/lessons.PNG)
 
-Клик по ссылке на "Self education" и клик по студенту "Howard Wolowitz":
+Клик по ссылке на "Self education"(/lesons/3) и клик по студенту "Howard Wolowitz":
 
 ![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab7/screenshots/selfEducation.PNG)
 
