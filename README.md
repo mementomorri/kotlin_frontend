@@ -4,23 +4,18 @@
     — Поднять состояние компонента RStudentList  в созданный компонент;\
     — RStudentList преобразовать в функционнальный компонент.
 
-Основной код для реализации названия занятия как компонента на основе класса RStudentClasses и последовательного написания соответствующей функции RClasses, добавлен в файл RClasses.kt:
+Основной код для реализации названия занятия как компонента на основе класса RLesson и последовательного написания соответствующей функции Lesson, добавлен в файл RLesson.kt:
 
-    class RStudentClasses : RComponent<RClasses, RStudentListState>(){
+    class RLesson : RComponent<RLessonProps, RStudentListState>(){
         override fun componentWillMount() {
             state.apply {
                 present = Array(props.students.size){false}
             }
         }
         override fun RBuilder.render() {
-            select {
-                props.nameOfClass.map {
-                    option { +it.name }
-                }
-            }
-            ol {
-                fStudentList(props.students,state.present, onIndex())
-            }
+            h2 { +props.lesson }
+            fstudentList(props.students,state.present, onIndex())
+
         }
         fun RBuilder.onIndex(): (Int) -> (Event) -> Unit = {
             onClick(it)
@@ -31,22 +26,25 @@
             }
         }
     }
-    fun RBuilder.RClasses(students: Array<Student>, nameOfClass: Array<nameOfClass>) =
-        child(RStudentClasses::class){
+    fun RBuilder.Lesson(
+        students: Array<Student>,
+        lesson:String
+    ) = child(RLesson::class){
             attrs.students = students
-            attrs.nameOfClass = nameOfClass
+            attrs.lesson=lesson
         }
 
-Решение использует интерфейсы RClasses и RStudentListState:
+Решение использует интерфейсы RLessonProps и RStudentListState:
     
-    interface RClasses : RProps {
-        var nameOfClass: Array<nameOfClass>
-        var listStudent :Array<Student>
+    interface RLessonProps : RProps {
+        var students :Array<Student>
+        var lesson : String
     }
 
     interface RStudentListState :RState{
         var present: Array<Boolean>
     }
+
 
 Изменения в файле main.kt затрагивают лишь вызов функции:
 
@@ -54,29 +52,35 @@
             h1 {
                 +"Students"
             }
-            RClasses( studentList.toTypedArray(), ListOfClasses)
+            Lesson( studentList.toTypedArray(), "Math")
         }
+Где строка "Math" название необходимого предмета.\
+Состояние компонента RStudentList поднято в RLesson и преобразовано в функциональный:
 
-Состояние компонента RStudentList поднято в RClasses и преобразовано в функциональный:
-
-    fun RBuilder.RFStudentList(students: Array<Student>,state : Array<Boolean>, onClick: (Int) -> (Event)->Unit) =
-        child(functionalComponent<RStudentListProps> {props ->
-            props.students.mapIndexed {index, student ->
-                li {
-                    rstudent(student, state[index],onClick(index))
+    val studentList =
+        functionalComponent<RStudentListProps>{
+            ul {
+                it.students.mapIndexed { index, student ->
+                    li {
+                        rstudent(student, it.present[index], it.onClick(index))
+                    }
                 }
             }
-        }){
-            attrs.students = students
         }
+
+    fun RBuilder.fstudentList(
+        students: Array<Student>,
+        present: Array<Boolean>,
+        onClick: (Int) -> (Event)->Unit
+    ) =child(studentList){
+        attrs.students=students
+        attrs.present=present
+        attrs.onClick=onClick
+    }
 
 После загруски страница выглядит так:
 
 ![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab5/screenshots/load.PNG)
-
-После смены занятия:
-
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab5/screenshots/change_class.PNG)
 
 После клика по студентам:
 
