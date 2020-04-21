@@ -10,3 +10,8 @@ a, body {
 .absent {
     font-style: italic;
 }
+
+.fakeLink {
+    text-decoration: underline;
+    cursor: pointer;
+}
