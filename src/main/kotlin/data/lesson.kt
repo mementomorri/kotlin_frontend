@@ -6,7 +6,7 @@ data class Lesson(
     override fun toString(): String = name
 }
 
-fun lessonsList() = arrayOf(
+val lessonsList = arrayOf(
     Lesson("Lecture"),
     Lesson("Practice"),
     Lesson("Exam")

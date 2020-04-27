@@ -1,325 +1,132 @@
-# lab 8
+# lab 9
 Задание:\
-Разработайте компоненты, отвечающие за редактирование названия занятия и имени и фамилии студента. Разработайте компонент, отвечающий за редактирование списка элементов (с возможностью добавить или удалить элемент). В качестве аргументов этому компоненту передаются компоненты для отображения и для редактирования элемента списка. Добавьте в приложение страницы для редактирования списка студентов и списка занятий.\ 
+Используя код приложения из лекций переделайте приложения из последнего задания предыдущего модуля с использованием redux. Реализовать хранилище нужно простым способом, без использования функций комбинирования reducer'ов.
 
-В компонент  "anyList" внесены изменения в соответствии с заданием, компонент сформирован в список с возможностью добавлять новые элементы, студента или занятие, в зависимости от переданного массива.\
+
+
+В компонент  "anyList" внесены изменения в соответствии с последним заданием предыдущего модуля, сравнительно с предыдущим заданий изменений никаких . Компонент "State" дополнен массивами "lessons" и "students": 
+
+	class State (
+	    val presents: Array<Array<Boolean>>,
+	    var lessons: Array<Lesson>,
+	    var students: Array<Student>
+	)
+
+"actions" дополненн новыми классами для корректной работы с состояниями:
+
+	class ChangePresent(val lesson: Int, val student: Int) : RAction
+	class addLesson (val click:Event):RAction
+	class addStudent (val click: Event):RAction
+	class removeLesson (val indexOfLesson: Int):RAction
+	class removeStudent(val indexOfStudent:Int):RAction
+	class editLesson(val lesson: Lesson):RAction
+	class editStudent(val student: Student):RAction
+
+"reducers" дополнен элементами из последнего задания предыдущего модуля:
+
+	fun changeReducer(state: State, action: RAction) =
+	    when (action) {
+	        is ChangePresent -> State(
+	            state.presents.mapIndexed { indexLesson, lesson ->
+	                if (indexLesson == action.lesson)
+	                    lesson.mapIndexed { indexStudent, student ->
+	                        if (indexStudent == action.student)
+	                            !student
+	                        else student
+	                    }.toTypedArray()
+	                else
+	                    lesson
+	            }.toTypedArray(),
+	            state.lessons,
+	            state.students
+	        )
+	
+	        is addLesson -> State(
+	            state.presents.plus(arrayOf(Array(state.students.size) { false })),
+	            state.lessons.plus(Lesson("new lesson")),
+	            state.students
+	        )
+	
+	        is addStudent ->State(
+	            state.presents.plus(arrayOf(Array(state.students.size) { false })),
+	            state.lessons,
+	            state.students.plus(Student("New", "Student"))
+	        )
+	
+	        is removeLesson ->State(
+	            presents = state.presents.copyOfRange(0,action.indexOfLesson)
+	                    +state.presents.copyOfRange(action.indexOfLesson+1,state.presents.size),
+	            lessons = state.lessons.copyOfRange(0,action.indexOfLesson)
+	                    +state.lessons.copyOfRange(action.indexOfLesson+1,state.lessons.size),
+	            students = state.students
+	        )
+	
+	        is removeStudent ->State(
+	            presents = state.presents.copyOfRange(0,action.indexOfStudent)
+	                    +state.presents.copyOfRange(action.indexOfStudent+1,state.presents.size),
+	            lessons = state.lessons,
+	            students = state.students.copyOfRange(0,action.indexOfStudent)
+	                    +state.students.copyOfRange(action.indexOfStudent+1,state.students.size)
+	        )
+	
+	        is editLesson -> State(
+	            state.presents,
+	            state.lessons.plus(action.lesson),
+	            state.students
+	        )
+	
+	        is editStudent -> State(
+	            state.presents,
+	            state.lessons,
+	            state.students.plus(action.student)
+	        )
+	        else -> state
+	    }
+
+В сравнении с последним заданием предыдущего модуля никаких концептуальных изменений, они лишь перенесены для корректной работы с "Redux", функции добавления занятия или студента, их изминения или удаления остались прежними, их параметры и возвращаемые данные остаются прежними.\
+
 Приложение после загрузки и после клика по "Lessons":
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab8/screenshots/onLoad.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/onLoad.PNG)
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab8/screenshots/anyList.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/lessons.PNG)
 
-Содержимое компонента "anyList" представлено ниже:
+После двойного нажатия по строке "Add":
 
-	interface AnyListProps<O> : RProps {
-	    var objs: Array<O>
-	    var add: (Event) -> Unit
-	    var remove: (Int) -> Unit
-	}
-	
-	fun <O> fAnyList(
-	    name: String,
-	    path: String) =
-	    functionalComponent<AnyListProps<O>> { props ->
-	        h2 { +name }
-	        span("fakeLink") {
-	            +"Add"
-	            attrs.onClickFunction = props.add}
-	        table {
-	            props.objs.mapIndexed { index, obj ->
-	                tr {
-	                    attrs.id="${index+1}"
-	                    td {
-	                        navLink("$path/$index") {
-	                            +obj.toString()
-	                        }
-	                    }
-	                    td {
-	                        navLink("$path/${index}/edit") {
-	                            +" Edit "
-	                        }
-	                    }
-	                    td {
-	                        span("fakeLink") {
-	                            +" Delete"
-	                            attrs.onClickFunction = {
-	                                props.remove(index)
-	                            }
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	    }
-	
-	fun <O> RBuilder.anyList(
-	    anys: Array<O>,
-	    name: String,
-	    path: String,
-	    add:(Event) -> Unit,
-	    remove: (Int) -> Unit
-	) = child(
-	    withDisplayName(name, fAnyList<O>(name, path))
-	) {
-	    attrs.objs = anys
-	    attrs.add=add
-	    attrs.remove=remove
-	}
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/newStudents.PNG)
 
-Функция вызова компонента имеет параметры:\
-"objs", который является массивом передаваемых данных таких как "students" или "lessons",\
-"add", функция добавляющая новый элеменнный в конкретный массив,\
- и "remove", функция убирающая конкретный элемент из массива.\ 
-Изменение элемента массива происходит с помощью открытия соответствущей ссылки на редактируемый элемент массива, напротив элемента в списке, "Edit".\
-Соответсвенно изминениям в "anyList" переработан компонент "App", "lessons" и "students" перенесены в сосояния:\
+Как видно по скриншоту, добавилось два новых студента "New Student", ссылка по прежнему кликабельна:
 
-	interface AppState : RState {
-	    var lessons: Array<Lesson>
-	    var students: Array<Student>
-	    var presents: Array<Array<Boolean>>
-	}
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/newStudent.PNG)
 
-Для отображения списков внутри приложения они иницированы в состояния следующим образом:\
+Элементы внутри списка попрежнему активны, клик по занятию "Lecture"  изменяет стиль строки:
 
-	    override fun componentWillMount() {
-	        state.students= studentList()
-	        state.lessons= lessonsList()
-	        state.presents = Array(state.lessons.size) {
-	            Array(state.students.size) { false }
-	        }
-	    }
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/lectureClicked.PNG)
 
-Соответственно функция "app()" больше не нужндается в аргументах и они были убраны из функции "main()":
+Вернувшись назад к студентам можно менять имена или удалять его из списка, кликнув по "Edit" напротив "New Student" попрежнему открывается компонент с редактирование имени студента:
 
-	fun main() {
-	    render(document.getElementById("root")!!) {
-	        hashRouter {
-	            app()
-	        }
-	    }
-	}
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/newStudentEdit.PNG)
 
-Изменен вызов функции "anyList" внутри переключателей "/lessons" и "/students":\
+Изменим имя на "Rajesh Ramayan":
 
-	            route("/lessons",
-	                exact = true,
-	                render = {
-	                    anyList(
-	                        state.lessons,
-	                        "Lessons",
-	                        "/lessons",
-	                        addLesson(),
-	                        removeLesson())
-	                }
-	            )
-	            route("/students",
-	                exact = true,
-	                render = {
-	                    anyList(
-	                        state.students,
-	                        "Students",
-	                        "/students",
-	                        addStudent(),
-	                        removeStudent())
-	                }
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/RajeshRamayanEditing.PNG)
 
-Добавлены функции обработчики:\
-"addLesson()" и "addStudent()", которые похожи по функционалу, они добавляют в массивы "lessons" и массив "students" новые элементы\
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/RajeshRamayan.PNG)
 
-	    fun addLesson():(Event) -> Unit = {
-	        setState {
-	            lessons += Lesson("new lesson")
-	            presents += arrayOf(Array(state.students.size){false})
-	        }
-	    }
-	    fun addStudent():(Event)->Unit={
-	        setState{
-	            students+=Student("New","Student")
-	        }
-	    }
+Удалим элемент "New Student":
 
-Пример использования функции "addLesson" после нажатия по строке "Add":\
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/deleteStudent.PNG)
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab8/screenshots/addLesson.PNG)
+Аналогичные действия могут быть совершены с занятиями:
 
-Как видно по скриншоту, добавилось новое занятие"new lesson", ссылка кликабельна:\
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/lessons.PNG)
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab8/screenshots/newLesson.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/newLessons.PNG)
 
-Элементы внутри списка попрежнему активны, клик по студентам "Sheldon Cooper" и "Howard Wolowitz" изменяет стиль строки\
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/devOps.PNG)
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab8/screenshots/newLessonClicked.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/lessons2.PNG)
 
-Вернувшись назад к занятиям можно менять название зания или удалять его из списка, кликнув по "Edit" напротив "Practice" открывается отдельный компонент с редактированием элемента списка:\
-
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab8/screenshots/practiceEdit.PNG)
-
-Как видно из скриншота страка сразу заполнилась редактируемым элементом Изменим занятие на "Functional programming" и нажмем кнопку "Save":\
-
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab8/screenshots/functionalProgramming.PNG)
-
-Элемент "Practice" был изменен на "Functional programming". Удалим элемент "Lecture" нажатием по "Delete" напротив этого элемента:\
-
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab8/screenshots/deleteLecture.PNG)
-
-Аналогичные действия могут быть совершены над списком студентов:\
-
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab8/screenshots/newStudent.PNG)
-
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab8/screenshots/leonardEdit.PNG)
-
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab8/screenshots/deleteSheldon.PNG)
-
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab8/screenshots/KarstenClicked.PNG)
-
-Отдельный компонент с редактирование реализован с помощью переключателя "/lessons/:number/edit" или "/students/:number/edit" в случаями со студентами:\
-
-	            route(
-	                "/lessons/:number/edit",
-	                render = { route_props: RouteResultProps<RouteNumberResult> ->
-	                    val num = route_props.num()
-	                    val lesson = state.lessons[num]
-	                    lessonEdit(
-	                        num,
-	                        lesson,
-	                        editLesson(),
-	                        removeLesson()
-	                        )
-	                }
-	            )
-	            route(
-	                "/students/:number/edit",
-	                render = { route_props: RouteResultProps<RouteNumberResult> ->
-	                    val num = route_props.num()
-	                    val students = state.students[num]
-	                    studentEdit(
-	                        num,
-	                        students,
-	                        editStudent(),
-	                        removeStudent()
-	                    )
-	                }
-	            )
-
-Каждый переключатель вызывает соответствующую ему функцию "editLesson" или "editStudent", содержимое этих функций находится внутри компонентов "lesson" и компонента "student", имеет следущее содержание:\
-
-	interface LessonEditProps : RProps {
-	    var index:Int
-	    var lesson: Lesson
-	    var onClick: (Lesson)->Unit
-	    var remove: (Int) -> Unit
-	}
-	
-	val flessonEdit=
-	    functionalComponent<LessonEditProps> { props ->
-	        span {
-	            input() {
-	                attrs.id = "lessonEdit${props.index}"
-	                attrs.defaultValue = props.lesson.name
-	            }
-	            button {
-	                +"Save"
-	                attrs.onClickFunction = {
-	                    val inputElement = document
-	                        .getElementById("lessonEdit${props.index}")
-	                            as HTMLInputElement
-	                    props.remove(props.index)
-	                    props.onClick(Lesson(inputElement.value))
-	                    window.history.back()
-	                }
-	            }
-	        }
-	    }
-	
-	fun RBuilder.lessonEdit(
-	     index:Int,
-	     lesson: Lesson,
-	     onClick: (Lesson)->Unit,
-	     remove: (Int) -> Unit
-	) = child(flessonEdit){
-	        attrs.index=index
-	        attrs.lesson=lesson
-	        attrs.onClick=onClick
-	        attrs.remove=remove
-	}
-
-Функция "lessonEdit" отрисовывает строку, заполняя её содержимым выбранного из редактируемого списка элемента, пользователь заполняет строку и нажимает кнопку "Save",
-после чего выбранный элемент удаляется и его местно занимает новый, заполненный пользователем. Аналогично написала функция "studentEdit":\
-
-	interface studentEditProps : RProps {
-	    var index:Int
-	    var student: Student
-	    var onClick: (Student)->Unit
-	    var remove: (Int) -> Unit
-	}
-	
-	val fstudentEdit=
-	    functionalComponent<studentEditProps> { props ->
-	        span {
-	            input() {
-	                attrs.id = "studentFirstnaneEdit${props.index}"
-	                attrs.defaultValue = props.student.firstname
-	            }
-	            input() {
-	                attrs.id = "studentSurnameEdit${props.index}"
-	                attrs.defaultValue = props.student.surname
-	            }
-	            button {
-	                +"Save"
-	                attrs.onClickFunction = {
-	                    val firstname = document
-	                        .getElementById("studentFirstnaneEdit${props.index}")
-	                            as HTMLInputElement
-	                    val surname = document
-	                        .getElementById("studentSurnameEdit${props.index}")
-	                            as HTMLInputElement
-	                    props.remove(props.index)
-	                    props.onClick(Student(firstname.value, surname.value))
-	                    window.history.back()
-	                }
-	            }
-	        }
-	    }
-	
-	fun RBuilder.studentEdit(
-	     index:Int,
-	     student: Student,
-	     onClick: (Student)->Unit,
-	     remove: (Int) -> Unit
-	) = child(fstudentEdit){
-	    attrs.index=index
-	    attrs.student=student
-	    attrs.onClick=onClick
-	    attrs.remove=remove
-	}
-
-Функции обработчики событий написаны аналогично функциям "addLesson" и "addStudent", обрабатывая получанный тип данных, в случае с удалением это Int, а в случае с изминением это созданный ранее тип данных "Lesson" или "Student":\
-
-	    fun removeLesson():(Int) -> Unit = {Int ->
-	        setState{
-	            lessons=state.lessons.copyOfRange(0,Int)+
-	                    state.lessons.copyOfRange(Int+1,state.lessons.size)
-	            presents=state.presents.copyOfRange(0,Int)+
-	                    state.presents.copyOfRange(Int+1,state.presents.size)
-	        }
-	    }
-	    fun removeStudent():(Int) -> Unit = {Int ->
-	        setState{
-	            students=state.students.copyOfRange(0,Int)+
-	                    state.students.copyOfRange(Int+1,state.students.size)
-	        }
-	    }
-	    fun editLesson():(Lesson) -> Unit={Lesson->
-	        setState{
-	            lessons+= Lesson
-	            presents+= arrayOf(Array(state.students.size){false})
-	        }
-	    }
-	    fun editStudent():(Student) -> Unit={Student->
-	        setState{
-	            students+= Student
-	        }
-	    }
-	  
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/deleteLesson.PNG)
 
 Исходный код находится в папке src/main/kotlin/component.

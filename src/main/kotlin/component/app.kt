@@ -6,30 +6,25 @@ import org.w3c.dom.events.Event
 import react.*
 import react.dom.*
 import react.router.dom.*
+import redux.*
 
-interface AppState : RState {
-    var lessons: Array<Lesson>
-    var students: Array<Student>
-    var presents: Array<Array<Boolean>>
+interface AppProps : RProps {
+    var store: Store<State, RAction, WrapperAction>
 }
+
+val AppProps.lessons
+    get() = this.store.state.lessons
+val AppProps.students
+    get() = this.store.state.students
 
 interface RouteNumberResult : RProps {
     var number: String
 }
-
 fun RouteResultProps<RouteNumberResult>.num()=
     this.match.params.number.toIntOrNull() ?: -1
 
-class App : RComponent<RProps, AppState>() {
-    override fun componentWillMount() {
-        state.students= studentList()
-        state.lessons= lessonsList()
-        state.presents = Array(state.lessons.size) {
-            Array(state.students.size) { false }
-        }
-    }
-
-    override fun RBuilder.render() {
+fun fApp() =
+    functionalComponent<AppProps> { props ->
         header {
             h1 { +"App" }
             nav {
@@ -39,141 +34,159 @@ class App : RComponent<RProps, AppState>() {
                 }
             }
         }
+
         switch {
             route("/lessons",
                 exact = true,
                 render = {
                     anyList(
-                        state.lessons,
+                        props.store.getState().lessons,
                         "Lessons",
                         "/lessons",
-                        addLesson(),
-                        removeLesson())
+                        props.addLesson(),
+                        props.removeLesson())
                 }
             )
             route("/students",
                 exact = true,
                 render = {
                     anyList(
-                        state.students,
+                        props.store.getState().students,
                         "Students",
                         "/students",
-                        addStudent(),
-                        removeStudent())
+                        props.addStudent(),
+                        props.removeStudent())
                 }
             )
             route("/lessons/:number",
                 exact = true,
-                render = { route_props: RouteResultProps<RouteNumberResult> ->
-                    val num = route_props.match.params.number.toIntOrNull() ?: -1
-                    val lesson = state.lessons.getOrNull(num)
-                    if (lesson != null)
-                        anyFull(
-                            RBuilder::student,
-                            lesson,
-                            state.students,
-                            state.presents[num]
-                        ) { onClick(num, it) }
-                    else
-                        p { +"No such lesson" }
-                }
+                render = renderLesson(props)
             )
             route("/students/:number",
                 exact = true,
-                render = { route_props: RouteResultProps<RouteNumberResult> ->
-                    val num = route_props.match.params.number.toIntOrNull() ?: -1
-                    val student = state.students.getOrNull(num)
-                    if (student != null)
-                        anyFull(
-                            RBuilder::lesson,
-                            student,
-                            state.lessons,
-                            state.presents.map {
-                                it[num]
-                            }.toTypedArray()
-                        ) { onClick(it, num) }
-                    else
-                        p { +"No such student" }
-                }
+                render = renderStudent(props)
             )
             route(
                 "/lessons/:number/edit",
-                render = { route_props: RouteResultProps<RouteNumberResult> ->
-                    val num = route_props.num()
-                    val lesson = state.lessons[num]
-                    lessonEdit(
-                        num,
-                        lesson,
-                        editLesson(),
-                        removeLesson()
-                        )
-                }
+                render = renderLessonEdit(props)
             )
             route(
                 "/students/:number/edit",
-                render = { route_props: RouteResultProps<RouteNumberResult> ->
-                    val num = route_props.num()
-                    val students = state.students[num]
-                    studentEdit(
-                        num,
-                        students,
-                        editStudent(),
-                        removeStudent()
-                    )
-                }
+                render = renderStudentEdit(props)
             )
         }
     }
-    fun onClick(indexLesson: Int, indexStudent: Int) =
-        { _: Event ->
-            setState {
-                presents[indexLesson][indexStudent] =
-                    !presents[indexLesson][indexStudent]
-            }
-        }
-    fun addLesson():(Event) -> Unit = {
-        setState {
-            lessons += Lesson("new lesson")
-            presents += arrayOf(Array(state.students.size){false})
+
+fun AppProps.onClickStudent(num: Int): (Int) -> (Event) -> Unit =
+    { index ->
+        {
+            store.dispatch(ChangePresent(index, num))
         }
     }
-    fun addStudent():(Event)->Unit={
-        setState{
-            students+=Student("New","Student")
+
+fun AppProps.onClickLesson(num: Int): (Int) -> (Event) -> Unit =
+    { index ->
+        {
+            store.dispatch(ChangePresent(num, index))
         }
     }
-    fun removeLesson():(Int) -> Unit = {Int ->
-        setState{
-            lessons=state.lessons.copyOfRange(0,Int)+
-                    state.lessons.copyOfRange(Int+1,state.lessons.size)
-            presents=state.presents.copyOfRange(0,Int)+
-                    state.presents.copyOfRange(Int+1,state.presents.size)
-        }
-    }
-    fun removeStudent():(Int) -> Unit = {Int ->
-        setState{
-            students=state.students.copyOfRange(0,Int)+
-                    state.students.copyOfRange(Int+1,state.students.size)
-        }
-    }
-    fun editLesson():(Lesson) -> Unit={Lesson->
-        setState{
-            lessons+= Lesson
-            presents+= arrayOf(Array(state.students.size){false})
-        }
-    }
-    fun editStudent():(Student) -> Unit={Student->
-        setState{
-            students+= Student
-        }
-    }
+
+fun AppProps.addLesson():(Event) -> Unit={
+    store.dispatch(addLesson(it))
 }
 
+fun AppProps.addStudent():(Event) -> Unit={
+    store.dispatch(addStudent(it))
+}
+
+fun AppProps.removeLesson():(Int) -> Unit = {Int ->
+    store.dispatch(removeLesson(Int))
+}
+
+fun AppProps.removeStudent():(Int) -> Unit = {Int ->
+    store.dispatch(removeStudent(Int))
+}
+
+fun AppProps.editLesson():(Lesson) -> Unit={Lesson->
+    store.dispatch(editLesson(Lesson))
+}
+fun AppProps.editStudent():(Student) -> Unit={Student->
+    store.dispatch(editStudent(Student))
+}
+
+fun RBuilder.renderLesson(props: AppProps) =
+    { route_props: RouteResultProps<RouteNumberResult> ->
+        val num = route_props.match.params.number.toIntOrNull() ?: -1
+        val lesson = props.lessons.getOrNull(num)
+        if (lesson != null)
+            anyFull(
+                RBuilder::student,
+                lesson,
+                props.store.getState().students,
+                props.store.getState().presents[num],
+                props.onClickLesson(num)
+            )
+        else
+            p { +"No such lesson" }
+    }
+
+fun RBuilder.renderStudent(props: AppProps) =
+    { route_props: RouteResultProps<RouteNumberResult> ->
+        val num = route_props.match.params.number.toIntOrNull() ?: -1
+        val student = props.students.getOrNull(num)
+        if (student != null)
+            anyFull(
+                RBuilder::lesson,
+                student,
+                props.store.getState().lessons,
+                props.store.getState().presents.map {
+                    it[num]
+                }.toTypedArray(),
+                props.onClickStudent(num)
+            )
+        else
+            p { +"No such student" }
+    }
+
+fun RBuilder.renderLessonEdit(props: AppProps) =
+    { route_props: RouteResultProps<RouteNumberResult> ->
+        val num = route_props.num()
+        val lesson = props.lessons[num]
+        if (lesson != null) {
+            lessonEdit(
+                num,
+                lesson,
+                props.editLesson(),
+                props.removeLesson()
+            )
+        }
+        else
+            p { +"No such lesson" }
+    }
+
+fun RBuilder.renderStudentEdit(props: AppProps) =
+    { route_props: RouteResultProps<RouteNumberResult> ->
+        val num = route_props.num()
+        val student = props.students[num]
+        if (student != null) {
+            studentEdit(
+                num,
+                student,
+                props.editStudent(),
+                props.removeStudent()
+            )
+        }
+        else
+            p { +"No such student" }
+    }
+
 fun RBuilder.app(
+    store: Store<State, RAction, WrapperAction>
 ) =
     child(
-        withDisplayName("AppHoc", App::class)
+        withDisplayName("App", fApp())
     ) {
+        attrs.store = store
     }
 
 
