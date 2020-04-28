@@ -129,4 +129,4 @@
 
 ![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/deleteLesson.PNG)
 
-Исходный код находится в папке src/main/kotlin/component.
+Исходный код находится в папке src/main/kotlin/.
