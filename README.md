@@ -85,11 +85,11 @@
 
 В сравнении с последним заданием предыдущего модуля нет никаких концептуальных изменений, изминения лишь касаются корректировки работы с "Redux", функции добавления занятия или студента, их изминения или удаления остались прежними, их параметры и возвращаемые данные остаются прежними.\
 
-Приложение после загрузки и после клика по "Lessons":
+Приложение после загрузки и после клика по "Students":
 
 ![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/onLoad.PNG)
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/lessons.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/students.PNG)
 
 После двойного нажатия по строке "Add":
 
