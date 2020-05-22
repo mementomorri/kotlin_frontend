@@ -4,31 +4,31 @@
 
 Нагладно разберем как изменилось приложение, а затем перейдем к изминениям в коде. Вид приложения при загрузке остался не изменным, изменилась лишь часть с конкретным студентом или предметом, соответственно имеет смысл продемонстрировать именно эту часть приложения. Так выглядит приложение после клика по "Lessons", а затем по "Lecture":
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/onLoad.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab10/screenshots/onLoad.PNG)
 
 Кликнем по первым двум студентам:
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/onClick.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab10/screenshots/onClick.PNG)
 
 И для наглядности нажмем на "Absent":
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/lectureAbsent.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab10/screenshots/lectureAbsent.PNG)
 
 Затем по "Present":
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/lecturePresent.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab10/screenshots/lecturePresent.PNG)
 
 Кликнем по "Students", а затем выберем "Sheldon Cooper", откроем все его предметы:
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/sheldonAll.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab10/screenshots/sheldonAll.PNG)
 
 Кликнем по "Absent":
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/sheldonAbsent.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab10/screenshots/sheldonAbsent.PNG)
 
 Затем по "Present":
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab9/screenshots/sheldonPresent.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab10/screenshots/sheldonPresent.PNG)
 
 Разберем изминения в коде. Видимые кнопки формируются с помощью функции footer() помещенной после маркиорованного списка, в нижней части приложения, потому она и называется footer, вызов функции расположен после маркировано списка в anyFull.kt. Содержание функции, находящейся в файле footer.kt, идентично тому, которое представлено в проекте примере lawik123/kotlin-poc-frontend-react-redux:
 
