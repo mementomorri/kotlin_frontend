@@ -13,15 +13,15 @@ import kotlin.browser.window
 
 interface StudentProps : RProps {
     var student: Student
-    var present: Boolean
-    var onClick: (Event)->Unit
+    var cssClass: String
+    var onClick: (Event) -> Unit
 }
 
 val fStudent =
     functionalComponent<StudentProps> {
-        span (
-            if(it.present) "present" else "absent"
-        ){
+        span(
+            it.cssClass
+        ) {
             +"${it.student.firstname} ${it.student.surname}"
             attrs.onClickFunction = it.onClick
         }
@@ -29,59 +29,44 @@ val fStudent =
 
 fun RBuilder.student(
     student: Student,
-    present: Boolean,
-    onClick: (Event)->Unit
+    cssClass: String,
+    onClick: (Event) -> Unit
 ) = child(
-    withDisplayName(student.firstname, fStudent)
+    withDisplayName("Student", fStudent)
 ) {
-        attrs.student = student
-        attrs.present = present
-        attrs.onClick = onClick
-    }
-
-interface studentEditProps : RProps {
-    var index:Int
-    var student: Student
-    var onClick: (Student)->Unit
-    var remove: (Int) -> Unit
+    attrs.student = student
+    attrs.cssClass = cssClass
+    attrs.onClick = onClick
 }
 
-val fstudentEdit=
-    functionalComponent<studentEditProps> { props ->
+interface StudentEditProps : RProps {
+    var student: Pair<Int, Student>
+    var onClick: (Student) -> Unit
+}
+
+val fStudentEdit =
+    functionalComponent<StudentEditProps> { props ->
         span {
             input() {
-                attrs.id = "studentFirstnaneEdit${props.index}"
-                attrs.defaultValue = props.student.firstname
+                attrs.id = "firstname${props.student.first}"
+                attrs.defaultValue = props.student.second.firstname
             }
             input() {
-                attrs.id = "studentSurnameEdit${props.index}"
-                attrs.defaultValue = props.student.surname
+                attrs.id = "surname${props.student.first}"
+                attrs.defaultValue = props.student.second.surname
             }
             button {
                 +"Save"
                 attrs.onClickFunction = {
                     val firstname = document
-                        .getElementById("studentFirstnaneEdit${props.index}")
+                        .getElementById("firstname${props.student.first}")
                             as HTMLInputElement
                     val surname = document
-                        .getElementById("studentSurnameEdit${props.index}")
+                        .getElementById("surname${props.student.first}")
                             as HTMLInputElement
-                    props.remove(props.index)
                     props.onClick(Student(firstname.value, surname.value))
                     window.history.back()
                 }
             }
         }
     }
-
-fun RBuilder.studentEdit(
-     index:Int,
-     student: Student,
-     onClick: (Student)->Unit,
-     remove: (Int) -> Unit
-) = child(fstudentEdit){
-    attrs.index=index
-    attrs.student=student
-    attrs.onClick=onClick
-    attrs.remove=remove
-}

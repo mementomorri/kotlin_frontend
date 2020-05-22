@@ -2,61 +2,91 @@ package redux
 
 import data.*
 
-fun changeReducer(state: State, action: RAction) =
+fun presentsReducer(state: Presents, action: RAction, id: Int = -1) =
     when (action) {
-        is ChangePresent -> State(
-            state.presents.mapIndexed { indexLesson, lesson ->
-                if (indexLesson == action.lesson)
-                    lesson.mapIndexed { indexStudent, student ->
-                        if (indexStudent == action.student)
-                            !student
-                        else student
-                    }.toTypedArray()
-                else
-                    lesson
-            }.toTypedArray(),
-            state.lessons,
-            state.students
-        )
-
-        is addLesson -> State(
-            state.presents.plus(arrayOf(Array(state.students.size) { false })),
-            state.lessons.plus(Lesson("new lesson")),
-            state.students
-        )
-
-        is addStudent ->State(
-            state.presents.plus(arrayOf(Array(state.students.size) { false })),
-            state.lessons,
-            state.students.plus(Student("New", "Student"))
-        )
-
-        is removeLesson ->State(
-            presents = state.presents.copyOfRange(0,action.indexOfLesson)
-                    +state.presents.copyOfRange(action.indexOfLesson+1,state.presents.size),
-            lessons = state.lessons.copyOfRange(0,action.indexOfLesson)
-                    +state.lessons.copyOfRange(action.indexOfLesson+1,state.lessons.size),
-            students = state.students
-        )
-
-        is removeStudent ->State(
-            presents = state.presents.copyOfRange(0,action.indexOfStudent)
-                    +state.presents.copyOfRange(action.indexOfStudent+1,state.presents.size),
-            lessons = state.lessons,
-            students = state.students.copyOfRange(0,action.indexOfStudent)
-                    +state.students.copyOfRange(action.indexOfStudent+1,state.students.size)
-        )
-
-        is editLesson -> State(
-            state.presents,
-            state.lessons.plus(action.lesson),
-            state.students
-        )
-
-        is editStudent -> State(
-            state.presents,
-            state.lessons,
-            state.students.plus(action.student)
-        )
+        is ChangePresent ->
+            state.toMutableMap().apply {
+                this[action.lessonID]?.let {
+                    val old = it[action.studentID] ?: false
+                    (it as MutableMap)[action.studentID] = !old
+                }
+            }
+        is AddLesson ->
+            state.plus(id to state.values.first().keys.associateWith { false })
+        is AddStudent ->
+            HashMap<Int, Map<Int, Boolean>>().toMutableMap().apply {
+                state.map {
+                    put(it.key, it.value.plus(id to false))
+                }
+            }
+        is RemoveLesson -> state.minus(action.id)
+        is RemoveStudent ->
+            HashMap<Int, Map<Int, Boolean>>().toMutableMap().apply {
+                state.map {
+                    put(it.key, it.value.minus(action.id))
+                }
+            }
         else -> state
     }
+
+fun lessonsReducer(state: LessonState, action: RAction, newId: Int = -1) =
+    when (action) {
+        is AddLesson -> state + (newId to action.lesson)
+        is RemoveLesson -> state.minus(action.id)
+        is ChangeLesson ->
+            state.toMutableMap()
+                .apply {
+                    this[action.id] = action.newLesson
+                }
+        else -> state
+    }
+
+fun studentsReducer(state: StudentState, action: RAction, newId: Int = -1) =
+    when (action) {
+        is AddStudent -> state + (newId to action.student)
+        is RemoveStudent -> state.minus(action.id)
+        is ChangeStudent ->
+            state.toMutableMap()
+                .apply {
+                    this[action.id] = action.newStudent
+                }
+        else -> state
+    }
+
+fun visibilityFilterReducer(
+    state: VisibilityFilter=VisibilityFilter.SHOW_ALL,
+    action: RAction
+):VisibilityFilter  = when (action) {
+        is SetVisibilityFilter -> action.filter
+        else -> state
+    }
+
+fun rootReducer(state: State, action: RAction) =
+    when (action) {
+        is AddLesson -> {
+            val id = state.lessons.newId()
+            State(
+                lessonsReducer(state.lessons, action, id),
+                studentsReducer(state.students, action),
+                presentsReducer(state.presents, action, id),
+                visibilityFilterReducer(state.visibilityFilter, action)
+            )
+        }
+        is AddStudent -> {
+            val id = state.students.newId()
+            State(
+                lessonsReducer(state.lessons, action),
+                studentsReducer(state.students, action, id),
+                presentsReducer(state.presents, action, id),
+                visibilityFilterReducer(state.visibilityFilter, action)
+            )
+        }
+        else ->
+            State(
+                lessonsReducer(state.lessons, action),
+                studentsReducer(state.students, action),
+                presentsReducer(state.presents, action),
+                visibilityFilterReducer(state.visibilityFilter, action)
+            )
+    }
+

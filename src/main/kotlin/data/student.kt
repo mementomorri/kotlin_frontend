@@ -1,6 +1,6 @@
 package data
 
-data class Student (
+data class Student(
     val firstname: String,
     val surname: String
 ) {
@@ -8,7 +8,7 @@ data class Student (
         "$firstname $surname"
 }
 
-val studentList =
+fun studentList() =
     arrayOf(
         Student("Sheldon", "Cooper"),
         Student("Leonard", "Hofstadter"),

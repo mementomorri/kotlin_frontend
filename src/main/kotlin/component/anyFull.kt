@@ -7,38 +7,40 @@ import react.dom.*
 import react.functionalComponent
 
 interface AnyFullProps<O, S> : RProps {
-    var obj: O
-    var subobjs: Array<S>
-    var presents: Array<Boolean>
+    var obj: Pair<Int, O>
+    var subobjs: Map<Int, S>
+    var presents: Map<Int, Boolean>?
     var onClick: (Int) -> (Event) -> Unit
 }
 
 fun <O, S> fAnyFull(
-    rComponent: RBuilder.(S, Boolean, (Event) -> Unit) -> ReactElement
+    rComponent: RBuilder.(S, String, (Event) -> Unit) -> ReactElement
 ) =
-    functionalComponent<AnyFullProps<O, S>> {
+    functionalComponent<AnyFullProps<O, S>> { props ->
         h3 {
-            +it.obj.toString()
+            +props.obj.second.toString()
         }
         ul {
-            val t = Array<Any>(3){0}
-            it.subobjs.mapIndexed { index, sub ->
+            props.subobjs.map {
+                val present = props.presents?.get(it.key) ?: false
+                val cssClass = if (present) "present" else "absent"
                 li {
-                    t[index] = rComponent(sub, it.presents[index], it.onClick(index))
+                    rComponent(it.value, cssClass, props.onClick(it.key))
                 }
             }
         }
+        footer()
     }
 
 fun <O, S> RBuilder.anyFull(
-    rComponent: RBuilder.(S, Boolean, (Event) -> Unit) -> ReactElement,
-    obj: O,
-    subobjs: Array<S>,
-    presents: Array<Boolean>,
+    rComponent: RBuilder.(S, String, (Event) -> Unit) -> ReactElement,
+    obj: Pair<Int, O>,
+    subobjs: Map<Int, S>,
+    presents: Map<Int, Boolean>?,
     onClick: (Int) -> (Event) -> Unit
 ) = child(
-    withDisplayName("Full",  fAnyFull<O, S>(rComponent))
-){
+    withDisplayName("Full", fAnyFull<O, S>(rComponent))
+) {
     attrs.obj = obj
     attrs.subobjs = subobjs
     attrs.presents = presents

@@ -1,13 +1,19 @@
 package redux
 
-import data.Lesson
-import data.Student
-import org.w3c.dom.events.Event
+import data.*
 
-class ChangePresent(val lesson: Int, val student: Int) : RAction
-class addLesson (val click:Event):RAction
-class addStudent (val click: Event):RAction
-class removeLesson (val indexOfLesson: Int):RAction
-class removeStudent(val indexOfStudent:Int):RAction
-class editLesson(val lesson: Lesson):RAction
-class editStudent(val student: Student):RAction
+class ChangePresent(val lessonID: Int, val studentID: Int) : RAction
+
+class AddStudent(val student: Student) : RAction
+
+class RemoveStudent(val id: Int) : RAction
+
+class ChangeStudent(val id: Int, val newStudent: Student) : RAction
+
+class AddLesson(val lesson: Lesson) : RAction
+
+class RemoveLesson(val id: Int) : RAction
+
+class ChangeLesson(val id: Int, val newLesson: Lesson) : RAction
+
+class SetVisibilityFilter(val filter: VisibilityFilter) : RAction
