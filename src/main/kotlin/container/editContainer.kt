@@ -5,50 +5,46 @@ import redux.*
 import react.redux.rConnect
 import component.*
 import data.*
-import hoc.withDisplayName
 
-interface LessonEditOwnProps : RProps {
-    var lesson: Pair<Int, Lesson>
+interface MultipleChoiceEditOwnProps : RProps {
+    var MultipleChoice: Pair<Int, MultipleChoice>
 }
 
-val lessonEditContainer =
+val multipleChoiceEditContainer =
     rConnect<
             RAction,
             WrapperAction,
-            LessonEditOwnProps,
-            LessonEditProps
+            MultipleChoiceEditOwnProps,
+            MCQuestionEditProps
             >(
         { dispatch, ownProps ->
             onClick = {
-                dispatch(ChangeLesson(ownProps.lesson.first, it))
+                dispatch(ChangeMultipleChoice(ownProps.MultipleChoice.first, it))
             }
         }
     )(
-        withDisplayName(
-            "LessonEdit",
-            fLessonEdit
-        ).unsafeCast<RClass<LessonEditProps>>()
+
+            fMCQuestionEdit
+            .unsafeCast<RClass<MCQuestionEditProps>>()
     )
 
-interface StudentEditOwnProps : RProps {
-    var student: Pair<Int, Student>
+interface TrueFalseEditOwnProps : RProps {
+    var TrueFalse: Pair<Int, TrueFalse>
 }
 
-val studentEditContainer =
+val trueFalseEditContainer =
     rConnect<
             RAction,
             WrapperAction,
-            StudentEditOwnProps,
-            StudentEditProps
+            TrueFalseEditOwnProps,
+            TrueFalseEditProps
             >(
         { dispatch, ownProps ->
             onClick = {
-                dispatch(ChangeStudent(ownProps.student.first, it))
+                dispatch(ChangeTrueFalseQuestion(ownProps.TrueFalse.first, it))
             }
         }
     )(
-        withDisplayName(
-            "StudentEdit",
-            fStudentEdit
-        ).unsafeCast<RClass<StudentEditProps>>()
+            fTrueFalsetEdit
+        .unsafeCast<RClass<TrueFalseEditProps>>()
     )

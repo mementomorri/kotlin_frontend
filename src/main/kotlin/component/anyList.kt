@@ -15,7 +15,7 @@ interface AnyListProps<O> : RProps {
 fun <O> fAnyList(
     name: String,
     path: String,
-    rObj: RBuilder.(O, String, (Event) -> Unit) -> ReactElement
+    rObj: RBuilder.(O,  (Event) -> Unit) -> ReactElement
 ) =
     functionalComponent<AnyListProps<O>> { props ->
         h2 { +name }
@@ -28,17 +28,12 @@ fun <O> fAnyList(
                 tr {
                     td {
                         navLink("$path/${obj.key}") {
-                            rObj(obj.value, "normal", {})
-                        }
-                    }
-                    td {
-                        navLink("$path/${obj.key}/edit") {
-                            +" Edit "
+                            rObj(obj.value,  {})
                         }
                     }
                     td {
                         span("fakeLink") {
-                            +" Delete"
+                            +"Delete"
                             attrs.onClickFunction = {
                                 props.remove(obj.key)
                             }

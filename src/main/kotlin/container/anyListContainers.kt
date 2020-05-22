@@ -2,7 +2,6 @@ package container
 
 import component.*
 import data.*
-import hoc.withDisplayName
 import org.w3c.dom.events.Event
 import react.*
 import react.redux.rConnect
@@ -17,56 +16,51 @@ interface AnyListStateProps<O> : RProps {
     var objs: Map<Int, O>
 }
 
-val studentListHOC =
+val trueFalseListHOC =
     rConnect<
             State,
             RAction,
             WrapperAction,
             RProps,                         // Own Props
-            AnyListStateProps<Student>,
+            AnyListStateProps<TrueFalse>,
             AnyListDispatchProps,
-            AnyListProps<Student>
+            AnyListProps<TrueFalse>
             >(
         mapStateToProps = { state, _ ->
-            objs = state.students
+            objs = state.trueFalseQuestions
         },
         mapDispatchToProps = { dispatch, _ ->
-            add = { dispatch(AddStudent(Student("new", "student"))) }
-            remove = { dispatch(RemoveStudent(it)) }
+            add = { dispatch(AddTrueFalseQuestion(TrueFalse("new true/false question", Pair("True","False"),0))) }
+            remove = { dispatch(RemoveTrueFalseQuestion(it)) }
         }
     )
 
-val studentListRClass =
-    withDisplayName(
-        "StudentList",
-        fAnyList("Student", "/students", RBuilder::student)
-    )
-        .unsafeCast<RClass<AnyListProps<Student>>>()
+val trueFalseListRClass =
 
-val studentListContainer =
-    studentListHOC(studentListRClass)
+        fAnyList("True/False questions", "/TFQuestions", RBuilder::trueFalseQuestion)
+            .unsafeCast<RClass<AnyListProps<TrueFalse>>>()
 
-val lessonListContainer =
+val trueFalseListContainer =
+    trueFalseListHOC(trueFalseListRClass)
+
+val multipleChoiceListContainer =
     rConnect<
             State,
             RAction,
             WrapperAction,
             RProps,
-            AnyListStateProps<Lesson>,
+            AnyListStateProps<MultipleChoice>,
             AnyListDispatchProps,
-            AnyListProps<Lesson>
+            AnyListProps<MultipleChoice>
             >(
         { state, _ ->
-            objs = state.lessons
+            objs = state.multipleChoiceQuestions
         },
         { dispatch, _ ->
-            add = { dispatch(AddLesson(Lesson("new lesson"))) }
-            remove = { dispatch(RemoveLesson(it)) }
+            add = { dispatch(AddMultipleChoice(MultipleChoice("new multiple choice question", arrayOf(Answer("new answer",100.0),Answer("new answer",0.0),Answer("new answer",0.0))))) }
+            remove = { dispatch(RemoveMultipleChoice(it)) }
         }
     )(
-        withDisplayName(
-            "LessonList",
-            fAnyList("Lesson", "/lessons", RBuilder::lesson)
-        )
-            .unsafeCast<RClass<AnyListProps<Lesson>>>()
+            fAnyList("Multiple choice questions", "/MCQuestions", RBuilder::multipleChoiceQuestion)
+                    .unsafeCast<RClass<AnyListProps<MultipleChoice>>>()
     )

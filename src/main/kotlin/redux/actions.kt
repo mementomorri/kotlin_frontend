@@ -2,18 +2,14 @@ package redux
 
 import data.*
 
-class ChangePresent(val lessonID: Int, val studentID: Int) : RAction
+class AddTrueFalseQuestion(val TrueFalse: TrueFalse) : RAction
 
-class AddStudent(val student: Student) : RAction
+class RemoveTrueFalseQuestion(val id: Int) : RAction
 
-class RemoveStudent(val id: Int) : RAction
+class ChangeTrueFalseQuestion(val id: Int, val newTrueFalse: TrueFalse) : RAction
 
-class ChangeStudent(val id: Int, val newStudent: Student) : RAction
+class AddMultipleChoice(val MultipleChoice: MultipleChoice) : RAction
 
-class AddLesson(val lesson: Lesson) : RAction
+class RemoveMultipleChoice(val id: Int) : RAction
 
-class RemoveLesson(val id: Int) : RAction
-
-class ChangeLesson(val id: Int, val newLesson: Lesson) : RAction
-
-class SetVisibilityFilter(val filter: VisibilityFilter) : RAction
+class ChangeMultipleChoice(val id: Int, val newMultipleChoice: MultipleChoice) : RAction

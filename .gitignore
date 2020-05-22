@@ -1,8 +1,8 @@
 # Project exclude paths
 /.gradle/
-/build/
-/build/js/packages/kotlinjs/kotlin/
 /.idea/
+/build/
 /gradle/
 /gradlew
 /gradlew.bat
+

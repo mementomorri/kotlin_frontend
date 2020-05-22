@@ -2,91 +2,49 @@ package redux
 
 import data.*
 
-fun presentsReducer(state: Presents, action: RAction, id: Int = -1) =
+fun multipleChoiceReducer(state: multipleChoiceState, action: RAction, newId: Int = -1) =
     when (action) {
-        is ChangePresent ->
-            state.toMutableMap().apply {
-                this[action.lessonID]?.let {
-                    val old = it[action.studentID] ?: false
-                    (it as MutableMap)[action.studentID] = !old
-                }
-            }
-        is AddLesson ->
-            state.plus(id to state.values.first().keys.associateWith { false })
-        is AddStudent ->
-            HashMap<Int, Map<Int, Boolean>>().toMutableMap().apply {
-                state.map {
-                    put(it.key, it.value.plus(id to false))
-                }
-            }
-        is RemoveLesson -> state.minus(action.id)
-        is RemoveStudent ->
-            HashMap<Int, Map<Int, Boolean>>().toMutableMap().apply {
-                state.map {
-                    put(it.key, it.value.minus(action.id))
-                }
-            }
-        else -> state
-    }
-
-fun lessonsReducer(state: LessonState, action: RAction, newId: Int = -1) =
-    when (action) {
-        is AddLesson -> state + (newId to action.lesson)
-        is RemoveLesson -> state.minus(action.id)
-        is ChangeLesson ->
+        is AddMultipleChoice -> state + (newId to action.MultipleChoice)
+        is RemoveMultipleChoice -> state.minus(action.id)
+        is ChangeMultipleChoice ->
             state.toMutableMap()
                 .apply {
-                    this[action.id] = action.newLesson
+                    this[action.id] = action.newMultipleChoice
                 }
         else -> state
     }
 
-fun studentsReducer(state: StudentState, action: RAction, newId: Int = -1) =
+fun trueFalseReducer(state: trueFalseState, action: RAction, newId: Int = -1) =
     when (action) {
-        is AddStudent -> state + (newId to action.student)
-        is RemoveStudent -> state.minus(action.id)
-        is ChangeStudent ->
+        is AddTrueFalseQuestion -> state + (newId to action.TrueFalse)
+        is RemoveTrueFalseQuestion -> state.minus(action.id)
+        is ChangeTrueFalseQuestion ->
             state.toMutableMap()
                 .apply {
-                    this[action.id] = action.newStudent
+                    this[action.id] = action.newTrueFalse
                 }
-        else -> state
-    }
-
-fun visibilityFilterReducer(
-    state: VisibilityFilter=VisibilityFilter.SHOW_ALL,
-    action: RAction
-):VisibilityFilter  = when (action) {
-        is SetVisibilityFilter -> action.filter
         else -> state
     }
 
 fun rootReducer(state: State, action: RAction) =
     when (action) {
-        is AddLesson -> {
-            val id = state.lessons.newId()
+        is AddMultipleChoice -> {
+            val id = state.multipleChoiceQuestions.newId()
             State(
-                lessonsReducer(state.lessons, action, id),
-                studentsReducer(state.students, action),
-                presentsReducer(state.presents, action, id),
-                visibilityFilterReducer(state.visibilityFilter, action)
+                multipleChoiceReducer(state.multipleChoiceQuestions, action, id),
+                trueFalseReducer(state.trueFalseQuestions, action)
             )
         }
-        is AddStudent -> {
-            val id = state.students.newId()
+        is AddTrueFalseQuestion -> {
+            val id = state.trueFalseQuestions.newId()
             State(
-                lessonsReducer(state.lessons, action),
-                studentsReducer(state.students, action, id),
-                presentsReducer(state.presents, action, id),
-                visibilityFilterReducer(state.visibilityFilter, action)
+                multipleChoiceReducer(state.multipleChoiceQuestions, action),
+                trueFalseReducer(state.trueFalseQuestions, action, id)
             )
         }
         else ->
             State(
-                lessonsReducer(state.lessons, action),
-                studentsReducer(state.students, action),
-                presentsReducer(state.presents, action),
-                visibilityFilterReducer(state.visibilityFilter, action)
+                multipleChoiceReducer(state.multipleChoiceQuestions, action),
+                trueFalseReducer(state.trueFalseQuestions, action)
             )
     }
-

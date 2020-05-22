@@ -1,41 +1,23 @@
 package data
 
-typealias LessonState = Map<Int, Lesson>
+typealias multipleChoiceState = Map<Int, MultipleChoice>
 
-typealias StudentState = Map<Int, Student>
-
-typealias Presents = Map<Int, Map<Int, Boolean>>
-
-typealias Visibility = VisibilityFilter
+typealias trueFalseState = Map<Int, TrueFalse>
 
 class State(
-    val lessons: LessonState,
-    val students: StudentState,
-    val presents: Presents,
-    val visibilityFilter: Visibility
+        val multipleChoiceQuestions: multipleChoiceState,
+        val trueFalseQuestions: trueFalseState
 )
 
 fun <T> Map<Int, T>.newId() =
     (this.maxBy { it.key }?.key ?: 0) + 1
 
-fun State.presentsStudent(idStudent: Int) =
-    presents.map {
-        it.key to (it.value[idStudent] ?: false)
-    }.toMap()
-
-
 fun initialState() =
     State(
-        lessonsList().mapIndexed { index, lesson ->
-            index to lesson
+        MCQuestionsList().mapIndexed { index, MCQuestion ->
+            index to MCQuestion
         }.toMap(),
-        studentList().mapIndexed { index, student ->
-            index to student
-        }.toMap(),
-        lessonsList().mapIndexed { idLesson, _ ->
-            idLesson to studentList().mapIndexed { idStudent, _ ->
-                idStudent to false
-            }.toMap()
-        }.toMap(),
-        VisibilityFilter.SHOW_ALL
+        TFQuestionsList().mapIndexed { index, TFQuestion ->
+            index to TFQuestion
+        }.toMap()
     )

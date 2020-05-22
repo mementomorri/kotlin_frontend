@@ -7,8 +7,8 @@ import react.dom.*
 import react.router.dom.*
 
 interface AppProps : RProps {
-    var lessons: Map<Int, Lesson>
-    var students: Map<Int, Student>
+    var multipleChoiceQuestions: Map<Int, MultipleChoice>
+    var trueFalseQuestions: Map<Int, TrueFalse>
 }
 
 interface RouteNumberResult : RProps {
@@ -18,66 +18,66 @@ interface RouteNumberResult : RProps {
 fun fApp() =
     functionalComponent<AppProps> { props ->
         header {
-            h1 { +"App" }
+            h1 { +"Moodle questions editing" }
             nav {
                 ul {
-                    li { navLink("/lessons") { +"Lessons" } }
-                    li { navLink("/students") { +"Students" } }
+                    li { navLink("/MCQuestions") { +"Multiple choice questions" } }
+                    li { navLink("/TFQuestions") { +"True/False questions" } }
                 }
             }
         }
 
         switch {
-            route("/lessons",
+            route("/MCQuestions",
                 exact = true,
-                render = { lessonListContainer { } }
+                render = { multipleChoiceListContainer { } }
             )
-            route("/students",
+            route("/TFQuestions",
                 exact = true,
-                render = { studentListContainer {} }
+                render = { trueFalseListContainer {} }
             )
             route(
-                "/lessons/:number",
+                "/MCQuestions/:number",
                 exact = true,
                 render = renderObject(
-                    { props.lessons[it] },
-                    { index, lesson ->
-                        lessonFullContainer {
-                            attrs.obj = index to lesson
+                    { props.multipleChoiceQuestions[it] },
+                    { index, MCQuestion ->
+                        multipleChoiceFullContainer {
+                            attrs.keyQuestionPair = index to MCQuestion
                         }
                     }
                 )
             )
             route(
-                "/students/:number",
+                "/TFQuestions/:number",
                 exact = true,
                 render = renderObject(
-                    { props.students[it] },
-                    { index, student ->
-                        studentFullContainer {
-                            attrs.obj = index to student
+                    { props.trueFalseQuestions[it] },
+                    { index, TFQuestion ->
+                        trueFalseFullContainer {
+                            attrs.keyQuestionPair = index to TFQuestion
                         }
                     }
                 )
             )
             route(
-                "/lessons/:number/edit",
+                "/MCQuestions/:number/edit",
                 render = renderObject(
-                    { props.lessons[it] },
-                    { index, lesson ->
-                        lessonEditContainer {
-                            attrs.lesson = index to lesson
+                    { props.multipleChoiceQuestions[it] },
+                    { index, MCQuestion ->
+                        multipleChoiceEditContainer {
+                            attrs.MultipleChoice = index to MCQuestion
                         }
                     }
                 )
             )
             route(
-                "/students/:number/edit",
+                "/TFQuestions/:number/edit",
                 render = renderObject(
-                    { props.students[it] },
-                    { index, student ->
-                        studentEditContainer {
-                            attrs.student = index to student
+                    { props.trueFalseQuestions[it] },
+                    { index, TFQuestion ->
+                        trueFalseEditContainer {
+                            attrs.TrueFalse = index to TFQuestion
                         }
                     }
                 )
