@@ -6,19 +6,19 @@
 
 Вид приложения после загрузки:
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/onLoad.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/onLoad3.PNG)
 
 После добавления занятия "Homework" приложение выглядит так:
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/newElement.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/newElement3.PNG)
 
 Клик по студентам "Sheldon Cooper" и "Leonard Hofstadter" внутри созданного занятия "Homework":
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/onClick.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/onClick3.PNG)
 
 Добавление ещё одного занатия "Self education":
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/anotherElement.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/anotherElement3.PNG)
 
 Перенос массива "lessons" из свойств "AppProps" в состояния "AppState":
 
