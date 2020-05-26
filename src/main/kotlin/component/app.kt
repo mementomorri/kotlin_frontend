@@ -1,40 +1,44 @@
 package component
 
 import data.*
+import kotlinx.html.js.onClickFunction
 import org.w3c.dom.events.Event
 import react.*
+import react.dom.br
+import react.dom.button
 import react.dom.h1
 
-interface AppProps : RProps {
-    var students: Array<Student>
-}
-
 interface AppState : RState {
+    var students: Array<Student>
     var lessons: Array<Lesson>
     var presents: Array<Array<Boolean>>
 }
 
-class App : RComponent<AppProps, AppState>() {
+class App : RComponent<RProps, AppState>() {
     override fun componentWillMount() {
+        state.students = studentList
         state.lessons = lessonsList
         state.presents = Array(state.lessons.size) {
-            Array(props.students.size) { false }
+            Array(state.students.size) { false }
         }
     }
 
     override fun RBuilder.render() {
         h1 { +"App" }
-        addLesson(handleEvent())
+        addLesson(addLessonToArray())
+        br {  }
+        addStudent(addStudentToArray())
         lessonListFull(
             state.lessons,
-            props.students,
+            state.students,
             state.presents,
             onClickLessonFull
         )
         studentListFull(
             state.lessons,
-            props.students,
-            transform(state.presents),
+            state.students,
+            state.presents,
+//            transform(state.presents),
             onClickStudentFull
         )
     }
@@ -68,16 +72,20 @@ class App : RComponent<AppProps, AppState>() {
             }
         }
 
-    fun handleEvent():(String) -> Unit = { lesson->
+    fun addLessonToArray():(Lesson) -> Unit = { lesson->
         setState {
-            lessons += Lesson(lesson)
-            presents += arrayOf(Array(props.students.size){false})
+            lessons += lesson
+            presents += arrayOf(Array(state.students.size){false})
+        }
+    }
+    fun addStudentToArray():(Student) -> Unit = {Student->
+        setState {
+            students += Student
+            presents += arrayOf(Array(state.students.size){false})
         }
     }
 }
 
 
-fun RBuilder.app(students: Array<Student>
-) = child(App::class) {
-    attrs.students = students
-}
+fun RBuilder.app(
+) = child(App::class) {}
