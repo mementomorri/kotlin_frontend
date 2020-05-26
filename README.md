@@ -44,16 +44,17 @@
 
     override fun RBuilder.render() {
         h1 { +"App" }
-        addLesson(addLessonToArray())
+        addLesson(addObjectToArray<Lesson>())
         lessonListFull(
         ...)
         
-Функция "addLesson", добавляющая новое занятие, вызывает другую функцию "addLessonToArray", 
+Функция "addLesson", добавляющая новое занятие, вызывает другую параметрезированную функцию "addObjectToArray", 
 которая просто обновляет массив "lessons" добавляя набранный в строку предмет:
 
-    fun addLessonToArray():(Lesson) -> Unit = { lesson->
+    fun <obj>addObjectToArray():(obj) -> Unit = { obj ->
         setState {
-            lessons += lesson
+            if (obj is Lesson) lessons+=obj
+            if (obj is Student) students+=obj
             presents += arrayOf(Array(state.students.size){false})
         }
     }
@@ -132,18 +133,19 @@
 
     override fun RBuilder.render() {
         h1 { +"App" }
-        addLesson(addLessonToArray())
+        addLesson(addObjectToArray<Lesson>())
         br {  }
-        addStudent(addStudentToArray())
+        addStudent(addObjectToArray<Student>())
         lessonListFull(
         ...)
         
-Функция "addStudent", добавляющая нового студента, имеет в качестве аргумента вспомогательную функцию "addStudentToArray", 
+Функция "addStudent", добавляющая нового студента, имеет в качестве аргумента вспомогательную функцию "addObjectToArray", 
 которая просто обновляет массив "students" добавляя набранное в строку имя:
 
-    fun addStudentToArray():(Student) -> Unit = {Student->
+    fun <obj>addObjectToArray():(obj) -> Unit = { obj ->
         setState {
-            students += Student
+            if (obj is Lesson) lessons+=obj
+            if (obj is Student) students+=obj
             presents += arrayOf(Array(state.students.size){false})
         }
     }
