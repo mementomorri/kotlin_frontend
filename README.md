@@ -99,15 +99,15 @@
 
 Вид приложения после загрузки:
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6_proof/screenshots/onLoad2.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/onLoad2.PNG)
 
 После добавления студента "Rajesh Ramayan" приложение выглядит так:
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6_proof/screenshots/newElement2.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/newElement2.PNG)
 
 Клик по студентам "Rajesh Ramayan" в "Lecture" и "Howard Wolowitz" в "Practice":
 
-![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6_proof/screenshots/onClick2.PNG)
+![](https://github.com/mementomorri/Kotlin-Frontend/blob/lab6/screenshots/onClick2.PNG)
 
 Перенос массива "sudents" из свойств "AppProps" в состояния "AppState":
 
