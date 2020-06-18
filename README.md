@@ -1,1 +1,1 @@
-# https://mementomorri.github.io/Kotlin-Frontend/#/
+[Страница приложения] (https://mementomorri.github.io/Kotlin-Frontend/#/)
