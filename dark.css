@@ -1,14 +1,21 @@
 a, body {
-    background-color: #1a1a1a;
+    background-color: darkslategray;
     color: white;
+}
+
+.present {
+    font-weight: bold;
+}
+
+.absent {
+    font-style: italic;
+}
+
+.normal {
+
 }
 
 .fakeLink {
     text-decoration: underline;
     cursor: pointer;
-    margin-left:5px;
-}
-
-.Link {
-    margin-left:6px;
 }
