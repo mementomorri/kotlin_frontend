@@ -23,11 +23,16 @@ fun fApp() =
                 ul {
                     li { navLink("/MCQuestions") { +"Multiple choice questions" } }
                     li { navLink("/TFQuestions") { +"True/False questions" } }
+                    li { navLink("/exportQuiz") { +"Export quiz"} }
                 }
             }
         }
 
         switch {
+            route("/exportQuiz",
+                exact = true,
+                render = { exportQuizContainer {} }
+            )
             route("/MCQuestions",
                 exact = true,
                 render = { multipleChoiceListContainer { } }

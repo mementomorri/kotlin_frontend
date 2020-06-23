@@ -8,7 +8,7 @@ class RemoveTrueFalseQuestion(val id: Int) : RAction
 
 class ChangeTrueFalseQuestion(val id: Int, val newTrueFalse: TrueFalse) : RAction
 
-class AddMultipleChoice(val MultipleChoice: MultipleChoice) : RAction
+class AddMultipleChoiceQuestion(val MultipleChoice: MultipleChoice) : RAction
 
 class RemoveMultipleChoice(val id: Int) : RAction
 

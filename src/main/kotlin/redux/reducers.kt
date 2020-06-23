@@ -4,7 +4,7 @@ import data.*
 
 fun multipleChoiceReducer(state: multipleChoiceState, action: RAction, newId: Int = -1) =
     when (action) {
-        is AddMultipleChoice -> state + (newId to action.MultipleChoice)
+        is AddMultipleChoiceQuestion -> state + (newId to action.MultipleChoice)
         is RemoveMultipleChoice -> state.minus(action.id)
         is ChangeMultipleChoice ->
             state.toMutableMap()
@@ -28,7 +28,7 @@ fun trueFalseReducer(state: trueFalseState, action: RAction, newId: Int = -1) =
 
 fun rootReducer(state: State, action: RAction) =
     when (action) {
-        is AddMultipleChoice -> {
+        is AddMultipleChoiceQuestion -> {
             val id = state.multipleChoiceQuestions.newId()
             State(
                 multipleChoiceReducer(state.multipleChoiceQuestions, action, id),

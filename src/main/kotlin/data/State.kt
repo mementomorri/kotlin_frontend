@@ -1,7 +1,6 @@
 package data
 
 typealias multipleChoiceState = Map<Int, MultipleChoice>
-
 typealias trueFalseState = Map<Int, TrueFalse>
 
 class State(

@@ -3,8 +3,6 @@ package component
 import data.*
 import kotlinx.html.InputType
 import kotlinx.html.id
-import kotlinx.html.js.onClickFunction
-import org.w3c.dom.events.Event
 import react.*
 import react.dom.*
 import react.functionalComponent

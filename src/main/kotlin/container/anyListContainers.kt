@@ -57,7 +57,7 @@ val multipleChoiceListContainer =
             objs = state.multipleChoiceQuestions
         },
         { dispatch, _ ->
-            add = { dispatch(AddMultipleChoice(MultipleChoice("new multiple choice question", arrayOf(Answer("new answer",100.0),Answer("new answer",0.0),Answer("new answer",0.0))))) }
+            add = { dispatch(AddMultipleChoiceQuestion(MultipleChoice("new multiple choice question", arrayOf(Answer("new answer",100.0),Answer("new answer",0.0),Answer("new answer",0.0))))) }
             remove = { dispatch(RemoveMultipleChoice(it)) }
         }
     )(
