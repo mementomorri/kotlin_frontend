@@ -1,0 +1,14 @@
+a, body {
+    background-color: #1a1a1a;
+    color: white;
+}
+
+.fakeLink {
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left:5px;
+}
+
+.Link {
+    margin-left:6px;
+}
